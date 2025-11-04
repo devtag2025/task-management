@@ -1,0 +1,143 @@
+# -----------------------------
+# OS junk
+# -----------------------------
+.DS_Store
+.DS_Store?
+Thumbs.db
+Desktop.ini
+
+# -----------------------------
+# Editors / IDEs
+# -----------------------------
+.vscode/
+!.vscode/settings.json
+!.vscode/extensions.json
+.idea/
+*.iml
+*.code-workspace
+.project
+.settings/
+.history/
+
+# -----------------------------
+# Logs & diagnostics
+# -----------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.pid
+*.seed
+*.pid.lock
+
+# -----------------------------
+# Environment & secrets
+# (keep example env files)
+# -----------------------------
+.env
+.env.local
+.env.*.local
+.envrc
+*.key
+*.pem
+*.crt
+*.p12
+*.pfx
+*.keystore
+*.jks
+*.env.backup
+
+# -----------------------------
+# Node / Frontend (React/Next/Vite/etc.)
+# -----------------------------
+node_modules/
+.pnp/
+.pnp.cjs
+.pnpm-store/
+.bun/
+dist/
+build/
+out/
+.cache/
+.npm/
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.next/
+.vercel/
+.netlify/
+.nuxt/
+.svelte-kit/
+coverage/
+.nyc_output/
+
+# -----------------------------
+# Python / Django
+# -----------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+.python-version
+.venv/
+venv/
+env/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+.manifest
+.pytest_cache/
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pytype/
+.coverage
+.coverage.*
+htmlcov/
+.tox/
+ruff_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# Django specifics
+db.sqlite3
+db.sqlite3-journal
+media/
+staticfiles/
+static_root/
+# If you commit collected static files, comment the above lines.
+
+# -----------------------------
+# TypeScript / TS build
+# -----------------------------
+*.tsbuildinfo
+
+# -----------------------------
+# Rust / Go (just in case)
+# -----------------------------
+target/
+bin/
+obj/
+
+# -----------------------------
+# Java / Kotlin (gradle/maven)
+# ----
