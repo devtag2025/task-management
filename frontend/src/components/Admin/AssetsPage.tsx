@@ -27,6 +27,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, AssignmentInd as AssignmentIndIcon, Replay as ReplayIcon } from '@mui/icons-material';
 import axios from 'axios';
+import { api } from '../../lib/api';
 
 type AssetType = 'laptop' | 'mouse' | 'keyboard' | 'headphone' | 'charger' | 'bag';
 type AssetStatus = 'available' | 'occupied' | 'maintenance' | 'retired';
@@ -91,7 +92,7 @@ const AssetsPage: React.FC = () => {
 
   const fetchAssets = async () => {
     try {
-      const res = await axios.get('/api/admin/assets');
+      const res = await api.get('/api/admin/assets');
       setRows(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load assets');
@@ -104,7 +105,7 @@ const AssetsPage: React.FC = () => {
     fetchAssets();
     (async () => {
       try {
-        const res = await axios.get('/api/admin/employees');
+        const res = await api.get('/api/admin/employees');
         setEmployees((res.data || []).map((e: any) => ({ _id: e._id, name: e.name })));
       } catch (e) { /* ignore */ }
     })();
@@ -164,9 +165,9 @@ const AssetsPage: React.FC = () => {
         }
       };
       if (editId) {
-        await axios.put(`/api/admin/assets/${editId}`, payload);
+        await api.put(`/api/admin/assets/${editId}`, payload);
       } else {
-        await axios.post('/api/admin/assets', payload);
+        await api.post('/api/admin/assets', payload);
       }
       setOpen(false);
       resetForm();
@@ -188,7 +189,7 @@ const AssetsPage: React.FC = () => {
     if (!assignId) return;
     try {
       setSaving(true);
-      await axios.put(`/api/admin/assets/${assignId}/assign`, {
+      await api.put(`/api/admin/assets/${assignId}/assign`, {
         employeeId: assignForm.employeeId,
         expectedReturnDate: assignForm.expectedReturnDate || undefined
       });
@@ -205,7 +206,7 @@ const AssetsPage: React.FC = () => {
   const returnAsset = async (id: string) => {
     try {
       setSaving(true);
-      await axios.put(`/api/admin/assets/${id}/return`);
+      await api.put(`/api/admin/assets/${id}/return`);
       fetchAssets();
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to return asset');

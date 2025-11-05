@@ -30,6 +30,7 @@ import {
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 import axios from 'axios';
+import { api } from '../../lib/api';
 
 type Priority = 'low' | 'medium' | 'high' | 'urgent';
 type Category = 'fixed' | 'hourly' | 'milestone';
@@ -123,7 +124,7 @@ const ProjectsPage: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get('/api/admin/projects');
+      const res = await api.get('/api/admin/projects');
       setRows(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load projects');
@@ -137,7 +138,7 @@ const ProjectsPage: React.FC = () => {
     // Load team leads for selection
     (async () => {
       try {
-        const res = await axios.get('/api/admin/employees');
+        const res = await api.get('/api/admin/employees');
         const tls = (res.data || []).filter((u: any) => u.role === 'teamlead').map((u: any) => ({ _id: u._id, name: u.name }));
         setTeamLeads(tls);
       } catch (e) {
@@ -176,11 +177,11 @@ const ProjectsPage: React.FC = () => {
         }));
       }
 
-      const createRes = await axios.post('/api/admin/projects', payload);
+      const createRes = await api.post('/api/admin/projects', payload);
       const created = createRes.data.project;
 
       if (hiddenFields.length > 0) {
-        await axios.put(`/api/admin/projects/${created._id}/hidden-fields`, { hiddenFieldsForTeamLead: hiddenFields });
+        await api.put(`/api/admin/projects/${created._id}/hidden-fields`, { hiddenFieldsForTeamLead: hiddenFields });
       }
 
       setOpen(false);
@@ -238,8 +239,8 @@ const ProjectsPage: React.FC = () => {
           dueDate: m.dueDate ? new Date(m.dueDate).toISOString() : undefined,
         }));
       }
-      await axios.put(`/api/admin/projects/${editId}`, payload);
-      await axios.put(`/api/admin/projects/${editId}/hidden-fields`, { hiddenFieldsForTeamLead: editHiddenFields });
+      await api.put(`/api/admin/projects/${editId}`, payload);
+      await api.put(`/api/admin/projects/${editId}/hidden-fields`, { hiddenFieldsForTeamLead: editHiddenFields });
       setEditOpen(false);
       setEditId(null);
       resetForm();

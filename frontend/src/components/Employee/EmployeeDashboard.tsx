@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
 import axios from 'axios';
+import { api } from '../../lib/api';
 
 interface Task {
   _id: string;
@@ -84,9 +85,9 @@ const EmployeeDashboard: React.FC = () => {
   const fetchDashboardData = async () => {
     try {
       const [tasksResponse, assetsResponse, statsResponse] = await Promise.all([
-        axios.get('/api/employee/tasks'),
-        axios.get('/api/employee/assets'),
-        axios.get('/api/employee/tasks/stats')
+        api.get('/api/employee/tasks'),
+        api.get('/api/employee/assets'),
+        api.get('/api/employee/tasks/stats')
       ]);
 
       setTasks(tasksResponse.data.slice(0, 5)); // Show only recent 5 tasks

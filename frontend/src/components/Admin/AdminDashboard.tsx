@@ -34,6 +34,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {api } from '../../lib/api';
 
 interface DashboardStats {
   employees: {
@@ -70,7 +71,7 @@ const AdminDashboard: React.FC = () => {
 
   const fetchDashboardData = async () => {
     try {
-      const response = await axios.get('/api/admin/dashboard');
+      const response = await api.get('/api/admin/dashboard');
       setStats(response.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to fetch dashboard data');

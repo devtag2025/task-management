@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Paper, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Chip, Alert, Dialog, DialogTitle, DialogContent, Grid, Divider, Stack, FormControl, InputLabel, Select, MenuItem, Button, TextField } from '@mui/material';
 import axios from 'axios';
-
+import { api } from '../../lib/api';
 interface ProjectRow {
   _id: string;
   projectName: string;
@@ -22,7 +22,7 @@ const ProjectsPage: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const res = await axios.get('/api/projects');
+      const res = await api.get('/api/projects');
       setRows(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load projects');
@@ -37,7 +37,7 @@ const ProjectsPage: React.FC = () => {
 
   const openDetails = async (id: string) => {
     try {
-      const res = await axios.get(`/api/projects/${id}`);
+      const res = await api.get(`/api/projects/${id}`);
       setDetails(res.data);
       setOpen(true);
     } catch (err: any) {
@@ -110,7 +110,7 @@ const ProjectsPage: React.FC = () => {
                       <InputLabel id="tl-status">Status</InputLabel>
                       <Select labelId="tl-status" label="Status" value={details.status} onChange={async (e) => {
                         const status = e.target.value as string;
-                        await axios.put(`/api/teamlead/projects/${details._id}`, { status });
+                        await api.put(`/api/teamlead/projects/${details._id}`, { status });
                         setDetails({ ...details, status });
                         fetchProjects();
                       }}>
@@ -135,7 +135,7 @@ const ProjectsPage: React.FC = () => {
                       <InputLabel id="tl-priority">Priority</InputLabel>
                       <Select labelId="tl-priority" label="Priority" value={details.priority} onChange={async (e) => {
                         const priority = e.target.value as string;
-                        await axios.put(`/api/teamlead/projects/${details._id}`, { priority });
+                        await api.put(`/api/teamlead/projects/${details._id}`, { priority });
                         setDetails({ ...details, priority });
                         fetchProjects();
                       }}>

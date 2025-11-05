@@ -21,6 +21,7 @@ import {
   Stack
 } from '@mui/material';
 import axios from 'axios';
+import { api } from '../../lib/api';
 
 interface Employee {
   _id: string;
@@ -39,7 +40,7 @@ const EmployeesPage: React.FC = () => {
 
   const fetchEmployees = async () => {
     try {
-      const res = await axios.get('/api/admin/employees');
+      const res = await api.get('/api/admin/employees');
       setRows(res.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load employees');
@@ -55,7 +56,7 @@ const EmployeesPage: React.FC = () => {
   const updateRole = async (id: string, role: Employee['role']) => {
     try {
       setSaving(id);
-      await axios.put(`/api/admin/employees/${id}/role`, { role });
+      await api.put(`/api/admin/employees/${id}/role`, { role });
       setRows((prev) => prev.map((e) => (e._id === id ? { ...e, role } : e)));
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update role');
@@ -67,7 +68,7 @@ const EmployeesPage: React.FC = () => {
   const updateActive = async (id: string, isActive: boolean) => {
     try {
       setSaving(id);
-      await axios.put(`/api/admin/employees/${id}/status`, { isActive });
+      await api.put(`/api/admin/employees/${id}/status`, { isActive });
       setRows((prev) => prev.map((e) => (e._id === id ? { ...e, isActive } : e)));
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to update status');

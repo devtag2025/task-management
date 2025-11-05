@@ -33,7 +33,7 @@ import {
   Warning as WarningIcon
 } from '@mui/icons-material';
 import axios from 'axios';
-
+import { api } from '../../lib/api';
 interface TeamMember {
   _id: string;
   name: string;
@@ -78,8 +78,8 @@ const MyTeamPage: React.FC = () => {
     try {
       setLoading(true);
       const [teamRes, availableRes] = await Promise.all([
-        axios.get<TeamMember[]>('/api/teamlead/team'),
-        axios.get<AvailableEmployee[]>('/api/teamlead/available-employees')
+        api.get<TeamMember[]>('/api/teamlead/team'),
+        api.get<AvailableEmployee[]>('/api/teamlead/available-employees')
       ]);
       setTeamMembers(teamRes.data);
       setAvailableEmployees(availableRes.data);
@@ -98,7 +98,7 @@ const MyTeamPage: React.FC = () => {
   // Add employee to team
   const handleAddEmployee = async (employeeId: string) => {
     try {
-      await axios.post('/api/teamlead/team/add', { employeeId });
+      await api.post('/api/teamlead/team/add', { employeeId });
       await fetchData();
       setSuccess('Employee added to team successfully');
       setAddDialogOpen(false);
@@ -112,7 +112,7 @@ const MyTeamPage: React.FC = () => {
   const handleRemoveEmployee = async () => {
     try {
       setRemoveError('');
-      await axios.post('/api/teamlead/team/remove', { employeeId: selectedEmployee });
+      await api.post('/api/teamlead/team/remove', { employeeId: selectedEmployee });
       await fetchData();
       setSuccess('Employee removed from team successfully');
       setRemoveDialogOpen(false);

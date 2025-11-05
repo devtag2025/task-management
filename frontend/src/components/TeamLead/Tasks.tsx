@@ -36,6 +36,7 @@ import {
   Schedule as ScheduleIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { api } from '../../lib/api';
 import { format } from 'date-fns';
 import dayjs, { Dayjs } from 'dayjs';
 
@@ -139,7 +140,7 @@ const Tasks: React.FC = () => {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/teamlead/tasks', {
+      const response = await api.get('/api/teamlead/tasks', {
         params: {
           status: statusFilter !== 'all' ? statusFilter : undefined,
           priority: priorityFilter !== 'all' ? priorityFilter : undefined,
@@ -161,7 +162,7 @@ const Tasks: React.FC = () => {
 
   const fetchTeamMembers = async () => {
     try {
-      const response = await axios.get('/api/teamlead/team');
+      const response = await api.get('/api/teamlead/team');
       setTeamMembers(response.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load team members');
@@ -170,7 +171,7 @@ const Tasks: React.FC = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axios.get('/api/teamlead/projects');
+      const response = await api.get('/api/teamlead/projects');
       setProjects(response.data);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load projects');
@@ -189,7 +190,7 @@ const Tasks: React.FC = () => {
   // Handle task creation
   const handleCreateTask = async () => {
     try {
-      await axios.post('/api/teamlead/tasks', newTask);
+      await api.post('/api/teamlead/tasks', newTask);
       setSuccess('Task created successfully');
       setCreateDialogOpen(false);
       fetchTasks();
@@ -214,7 +215,7 @@ const Tasks: React.FC = () => {
     if (!selectedTask) return;
 
     try {
-      await axios.put(`/api/teamlead/tasks/${selectedTask._id}`, {
+      await api.put(`/api/teamlead/tasks/${selectedTask._id}`, {
         assignedTo: newAssignee,
         reassignReason
       });

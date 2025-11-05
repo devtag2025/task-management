@@ -27,6 +27,7 @@ import {
   Warning as WarningIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { api } from '../../lib/api';
 import { format } from 'date-fns';
 
 interface Asset {
@@ -82,7 +83,7 @@ const AssetsPage: React.FC = () => {
   const fetchAssets = async () => {
     try {
       setLoading(true);
-      const res = await axios.get<AssetResponse>('/api/employee/assets');
+      const res = await api.get<AssetResponse>('/api/employee/assets');
       setData(res.data);
       setError('');
     } catch (err: any) {

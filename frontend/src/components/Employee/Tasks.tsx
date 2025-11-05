@@ -24,6 +24,7 @@ import {
   Assignment as AssignmentIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { api } from '../../lib/api';
 import { format } from 'date-fns';
 import dayjs from 'dayjs';
 
@@ -65,7 +66,7 @@ const Tasks: React.FC = () => {
   const fetchTasks = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/employee/tasks');
+      const response = await api.get('/api/employee/tasks');
       setTasks(response.data);
       setError('');
     } catch (err: any) {
@@ -83,7 +84,7 @@ const Tasks: React.FC = () => {
     if (!selectedTask || !newStatus) return;
 
     try {
-      await axios.patch(`/api/employee/tasks/${selectedTask._id}/status`, {
+      await api.patch(`/api/employee/tasks/${selectedTask._id}/status`, {
         status: newStatus,
         comment: statusComment
       });
