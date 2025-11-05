@@ -28,6 +28,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon
 } from '@mui/icons-material';
+import { api } from '../lib/api';
 
 const EmployeeDashboard = () => {
   const [tasks, setTasks] = useState([]);
@@ -49,19 +50,11 @@ const EmployeeDashboard = () => {
       if (!token) {
         throw new Error('Not authenticated. Please login.');
       }
-      
-      const headers = {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      };
 
       console.log('Fetching dashboard data...');
 
-      // Fetch stats first (before tasks/:id route can catch it)
-      console.log('Fetching stats from:', '/api/employee/tasks/stats');
-      const statsRes = await fetch('/api/employee/tasks/stats', { headers });
-      console.log('Stats response status:', statsRes.status);
-      
+      // Fetch stats first
+      console.log('Fetching stats from: /api/employee/tasks/stats');
       let statsData = {
         total: 0,
         completed: 0,
@@ -72,51 +65,29 @@ const EmployeeDashboard = () => {
         completionRate: 0
       };
       
-      if (statsRes.ok) {
-        const statsContentType = statsRes.headers.get('content-type');
-        if (statsContentType && statsContentType.includes('application/json')) {
-          statsData = await statsRes.json();
-          console.log('Stats data:', statsData);
-        }
-      } else {
-        console.error('Stats fetch failed:', statsRes.status, statsRes.statusText);
+      try {
+        const statsResponse = await api.get('/api/employee/tasks/stats');
+        statsData = statsResponse.data;
+        console.log('Stats data:', statsData);
+      } catch (statsErr) {
+        console.error('Stats fetch failed:', statsErr.response?.status, statsErr.message);
       }
 
       // Fetch tasks
-      console.log('Fetching tasks from:', '/api/employee/tasks');
-      const tasksRes = await fetch('/api/employee/tasks', { headers });
-      console.log('Tasks response status:', tasksRes.status);
-      
-      if (!tasksRes.ok) {
-        if (tasksRes.status === 401) {
-          throw new Error('Authentication failed. Please login again.');
-        }
-        if (tasksRes.status === 403) {
-          throw new Error('Access denied. Employee role required.');
-        }
-        throw new Error(`Failed to fetch tasks: ${tasksRes.status} ${tasksRes.statusText}`);
-      }
-      
-      const tasksContentType = tasksRes.headers.get('content-type');
-      if (!tasksContentType || !tasksContentType.includes('application/json')) {
-        throw new Error('Server returned invalid response. Check if backend is running on correct port.');
-      }
-      
-      const tasksData = await tasksRes.json();
+      console.log('Fetching tasks from: /api/employee/tasks');
+      const tasksResponse = await api.get('/api/employee/tasks');
+      const tasksData = tasksResponse.data;
       console.log('Tasks data:', tasksData);
 
       // Fetch assets
-      console.log('Fetching assets from:', '/api/employee/assets');
-      const assetsRes = await fetch('/api/employee/assets', { headers });
-      console.log('Assets response status:', assetsRes.status);
-      
+      console.log('Fetching assets from: /api/employee/assets');
       let assetsData = [];
-      if (assetsRes.ok) {
-        const assetsContentType = assetsRes.headers.get('content-type');
-        if (assetsContentType && assetsContentType.includes('application/json')) {
-          assetsData = await assetsRes.json();
-          console.log('Assets data:', assetsData);
-        }
+      try {
+        const assetsResponse = await api.get('/api/employee/assets');
+        assetsData = assetsResponse.data;
+        console.log('Assets data:', assetsData);
+      } catch (assetsErr) {
+        console.error('Assets fetch failed:', assetsErr.response?.status, assetsErr.message);
       }
 
       setTasks(Array.isArray(tasksData) ? tasksData.slice(0, 5) : []);
@@ -128,7 +99,24 @@ const EmployeeDashboard = () => {
       
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
-      setError(err.message || 'Failed to fetch dashboard data. Check console for details.');
+      
+      let errorMessage = 'Failed to fetch dashboard data. Check console for details.';
+      
+      if (err.response) {
+        // Server responded with error status
+        if (err.response.status === 401) {
+          errorMessage = 'Authentication failed. Please login again.';
+        } else if (err.response.status === 403) {
+          errorMessage = 'Access denied. Employee role required.';
+        } else {
+          errorMessage = err.response.data?.message || `Server error: ${err.response.status}`;
+        }
+      } else if (err.request) {
+        // Request made but no response received
+        errorMessage = 'Cannot connect to server. Please check if backend is running.';
+      }
+      
+      setError(errorMessage);
       setTasks([]);
       setAssets([]);
       setTaskStats({
@@ -147,52 +135,23 @@ const EmployeeDashboard = () => {
 
   const handleStartTask = async (taskId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/employee/tasks/${taskId}/start`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to start task');
-        return;
-      }
-
+      await api.post(`/api/employee/tasks/${taskId}/start`);
       fetchDashboardData();
     } catch (err) {
       console.error('Error starting task:', err);
-      setError('Failed to start task');
+      setError(err.response?.data?.message || 'Failed to start task');
     }
   };
 
   const handleStopTask = async (taskId) => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await fetch(`/api/employee/tasks/${taskId}/stop`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          description: 'Work session completed'
-        })
+      await api.post(`/api/employee/tasks/${taskId}/stop`, {
+        description: 'Work session completed'
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message || 'Failed to stop task');
-        return;
-      }
-
       fetchDashboardData();
     } catch (err) {
       console.error('Error stopping task:', err);
-      setError('Failed to stop task');
+      setError(err.response?.data?.message || 'Failed to stop task');
     }
   };
 
@@ -444,7 +403,7 @@ const EmployeeDashboard = () => {
               <Typography color="textSecondary" align="center" sx={{ py: 2 }}>
                 No assets assigned
               </Typography>
-            )}
+              )}
             <Button
               variant="outlined"
               fullWidth
