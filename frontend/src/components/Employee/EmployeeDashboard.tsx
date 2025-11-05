@@ -28,7 +28,7 @@ import {
   CheckCircle as CheckCircleIcon,
   Error as ErrorIcon
 } from '@mui/icons-material';
-import { api } from '../lib/api';
+import { api } from '../../lib/api';
 
 const EmployeeDashboard = () => {
   const [tasks, setTasks] = useState([]);
