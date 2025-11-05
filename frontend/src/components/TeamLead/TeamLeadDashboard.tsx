@@ -75,11 +75,24 @@ const TeamLeadDashboard: React.FC = () => {
         axios.get('/api/teamlead/team/performance')
       ]);
 
-      setTeamMembers(teamResponse.data);
+      // Validate and set team members - ensure it's an array
+      const teamData = teamResponse.data;
+      setTeamMembers(Array.isArray(teamData) ? teamData : []);
+
+      // Set task stats
       setTaskStats(statsResponse.data);
-      setTeamPerformance(performanceResponse.data);
+
+      // Validate and set team performance - ensure it's an array
+      const performanceData = performanceResponse.data;
+      setTeamPerformance(Array.isArray(performanceData) ? performanceData : []);
+      
+      setError('');
     } catch (err: any) {
+      console.error('Dashboard data fetch error:', err);
       setError(err.response?.data?.message || 'Failed to fetch dashboard data');
+      // Set empty arrays on error to prevent map errors
+      setTeamMembers([]);
+      setTeamPerformance([]);
     } finally {
       setLoading(false);
     }
@@ -93,19 +106,17 @@ const TeamLeadDashboard: React.FC = () => {
     );
   }
 
-  if (error) {
-    return (
-      <Alert severity="error" sx={{ mb: 2 }}>
-        {error}
-      </Alert>
-    );
-  }
-
   return (
     <Box>
       <Typography variant="h4" gutterBottom>
         Team Lead Dashboard
       </Typography>
+      
+      {error && (
+        <Alert severity="error" sx={{ mb: 2 }}>
+          {error}
+        </Alert>
+      )}
       
       <Grid container spacing={3}>
         {/* Task Statistics */}
@@ -196,21 +207,27 @@ const TeamLeadDashboard: React.FC = () => {
                 Create Task
               </Button>
             </Box>
-            <List>
-              {teamMembers.map((member) => (
-                <ListItem key={member._id}>
-                  <ListItemText
-                    primary={member.name}
-                    secondary={member.email}
-                  />
-                  <Chip 
-                    label={member.isActive ? 'Active' : 'Inactive'} 
-                    color={member.isActive ? 'success' : 'error'} 
-                    size="small" 
-                  />
-                </ListItem>
-              ))}
-            </List>
+            {teamMembers.length > 0 ? (
+              <List>
+                {teamMembers.map((member) => (
+                  <ListItem key={member._id}>
+                    <ListItemText
+                      primary={member.name}
+                      secondary={member.email}
+                    />
+                    <Chip 
+                      label={member.isActive ? 'Active' : 'Inactive'} 
+                      color={member.isActive ? 'success' : 'error'} 
+                      size="small" 
+                    />
+                  </ListItem>
+                ))}
+              </List>
+            ) : (
+              <Typography color="textSecondary" align="center" sx={{ py: 2 }}>
+                No team members found
+              </Typography>
+            )}
           </Paper>
         </Grid>
 
@@ -220,30 +237,36 @@ const TeamLeadDashboard: React.FC = () => {
             <Typography variant="h6" gutterBottom>
               Team Performance
             </Typography>
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Employee</TableCell>
-                    <TableCell align="right">Tasks</TableCell>
-                    <TableCell align="right">Completed</TableCell>
-                    <TableCell align="right">Rate</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {teamPerformance.map((perf) => (
-                    <TableRow key={perf.employee.id}>
-                      <TableCell>{perf.employee.name}</TableCell>
-                      <TableCell align="right">{perf.totalTasks}</TableCell>
-                      <TableCell align="right">{perf.completedTasks}</TableCell>
-                      <TableCell align="right">
-                        {perf.completionRate.toFixed(1)}%
-                      </TableCell>
+            {teamPerformance.length > 0 ? (
+              <TableContainer>
+                <Table size="small">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Employee</TableCell>
+                      <TableCell align="right">Tasks</TableCell>
+                      <TableCell align="right">Completed</TableCell>
+                      <TableCell align="right">Rate</TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+                  </TableHead>
+                  <TableBody>
+                    {teamPerformance.map((perf) => (
+                      <TableRow key={perf.employee.id}>
+                        <TableCell>{perf.employee.name}</TableCell>
+                        <TableCell align="right">{perf.totalTasks}</TableCell>
+                        <TableCell align="right">{perf.completedTasks}</TableCell>
+                        <TableCell align="right">
+                          {perf.completionRate.toFixed(1)}%
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            ) : (
+              <Typography color="textSecondary" align="center" sx={{ py: 2 }}>
+                No performance data available
+              </Typography>
+            )}
           </Paper>
         </Grid>
 
