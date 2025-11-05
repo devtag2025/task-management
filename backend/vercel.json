@@ -2,13 +2,14 @@
   "version": 2,
   "name": "task-management-backend",
   "builds": [
-    {
-      "src": "server.js",
-      "use": "@vercel/node"
-    }
+    { "src": "server.js", "use": "@vercel/node" }
   ],
   "routes": [
+    { "src": "/(admin|auth|assets|employee|projects|tasks|teamlead)(?:/.*)?", "dest": "/server.js" },
     { "src": "/routes/(.*)", "dest": "/server.js" },
     { "src": "/(.*)", "dest": "/server.js" }
-  ]
+  ],
+  "functions": {
+    "server.js": { "memory": 1024, "maxDuration": 10 }
+  }
 }
