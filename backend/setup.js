@@ -8,7 +8,7 @@ const User = require('./models/User');
 async function setupInitialData() {
   try {
     // Connect to MongoDB
-    await mongoose.connect(process.env.MONGODB_URI || 'mongodb+srv://developertag2025:xjs0pGQzmmNqxFdD@cluster0.5oapkgv.mongodb.net/task_manager?appName=Cluster0', {
+    await mongoose.connect('mongodb+srv://developertag2025:xjs0pGQzmmNqxFdD@cluster0.5oapkgv.mongodb.net/task_manager?appName=Cluster0', {
       useNewUrlParser: true,
       useUnifiedTopology: true,
     });
