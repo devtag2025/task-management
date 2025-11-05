@@ -2,7 +2,7 @@
 import axios from 'axios';
 // Create an Axios instance with base URL
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'https://task-management-jet-pi-83.vercel.app', // Vite example
+  baseURL:'https://task-management-jet-pi-83.vercel.app', // Vite example
 });
 // optional: auth header injection
 api.interceptors.request.use((config) => {
