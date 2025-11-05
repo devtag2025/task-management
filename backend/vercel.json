@@ -8,8 +8,7 @@
     }
   ],
   "routes": [
-    { "src": "/v1/(.*)", "dest": "/server.js" },
-    { "src": "/", "dest": "/server.js" }
+    { "src": "/routes/(.*)", "dest": "/server.js" },
+    { "src": "/(.*)", "dest": "/server.js" }
   ]
-
 }
